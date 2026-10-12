@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "name": "docuworks-ctypes",
+  "version": "1.0.1",
+  "filename": "docuworks_ctypes-1.0.1-py3-none-any.whl",
+  "path": "bundled/core/docuworks_ctypes-1.0.1-py3-none-any.whl",
+  "size_bytes": 48173,
+  "sha256": "7ea3a6d1623238180ccb400237a753b616dccf72761ba83d97fee1b55f7f5f58",
+  "url": "https://github.com/gogobousousannrinnsha/dw-ocr/releases/download/v0.8.1/docuworks_ctypes-1.0.1-py3-none-any.whl",
+  "license": "MIT"
+}

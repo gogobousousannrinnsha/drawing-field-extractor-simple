@@ -18,7 +18,9 @@ def progress(name, number, stage, completed, failed):
 def producer_contract(root):
     packages = {name: importlib.metadata.version(name) for name in
         ["pypdfium2", "pypdf", "paddleocr", "paddlex", "paddlepaddle-gpu", "Pillow", "numpy"]}
-    files = {relative(root, path): sha(path) for path in sorted((root / "source" / "simple_drawing").glob("*ocr*.py"))}
+    # Image export code does not change recognition and must not invalidate OCR caches.
+    files = {relative(root, path): sha(path) for path in
+             [root / "source" / "simple_drawing" / "pdf_ocr.py"]}
     vendor = root / "source" / "simple_drawing" / "vendor"
     if vendor.exists():
         files.update({relative(root, path): sha(path) for path in sorted(vendor.rglob("*.py"))})

@@ -1,4 +1,4 @@
-"""Build a reproducible source-only archive from an explicit publication allowlist."""
+"""Build a reproducible source archive with one audited user-owned Core wheel."""
 from __future__ import annotations
 
 import argparse
@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 import tomllib
 import zipfile
 
@@ -14,18 +15,20 @@ ROOT_FILES = {
     "LICENSE", "README.md", "THIRD_PARTY_NOTICES.md",
     "実行設定.json", "抽出設定.json",
     "初期設定.bat", "前処理.bat", "抽出.bat", "Excel再出力.bat", "モデル管理.bat",
-    "追加資産取得.bat", "Saluki導入.bat", "Saluki追加設定.bat",
+    "追加資産取得.bat", "Saluki導入.bat", "Saluki追加設定.bat", "全文OCR画像出力.bat",
 }
 SOURCE_FILES = {"source/run.py", "source/pyproject.toml", "source/LICENSE"}
 PUBLIC_SCRIPTS = {
     "bootstrap.py", "build_source_zip.py", "verify_setup.py",
-    "fetch_optional_assets.py", "setup_saluki.py",
+    "fetch_optional_assets.py", "setup_saluki.py", "bundled_core.py",
 }
 PUBLIC_ASSETS = {
     "python-runtime.json", "python-packages.json", "requirements-runtime.lock.txt",
     "ollama-runtime.json", "ocr-models.json", "saluki-runtime.json", "saluki-models.json",
     "optional-assets.json", "saluki-assets.json",
+    "bundled-core.json",
 }
+BUNDLED_CORE_PATH = "bundled/core/docuworks_ctypes-1.0.1-py3-none-any.whl"
 EXCLUDED_PARTS = {"__pycache__", ".git", ".ssh", ".venv", "node_modules"}
 PRIVATE_PATH = re.compile(r"\b[A-Za-z]:[\\/][^\s\"']+")
 PRIVATE_KEY = re.compile(r"(?m)^-----BEGIN (?:OPENSSH |RSA |EC |DSA |ENCRYPTED )?PRIVATE KEY-----")
@@ -37,6 +40,8 @@ def permitted(relative: Path) -> bool:
         return False
     name = relative.as_posix()
     if name in ROOT_FILES or name in SOURCE_FILES:
+        return True
+    if name == BUNDLED_CORE_PATH:
         return True
     if len(relative.parts) >= 3 and relative.parts[:2] in (
         ("source", "simple_drawing"), ("source", "tests")
@@ -58,6 +63,13 @@ def sha256(content: bytes) -> str:
 
 
 def source_files(root: Path) -> dict[str, bytes]:
+    scripts = str(Path(__file__).resolve().parent)
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    from bundled_core import validate_core_bundle
+    core = validate_core_bundle(root)
+    if core["path"] != BUNDLED_CORE_PATH:
+        raise ValueError("The bundled Core path differs from the publication allowlist")
     selected = {}
     for path in sorted(root.rglob("*")):
         if not path.is_file():
@@ -68,6 +80,12 @@ def source_files(root: Path) -> dict[str, bytes]:
         if path.is_symlink() or path.resolve() != path.absolute():
             raise ValueError(f"Public input must not be a link: {relative.as_posix()}")
         content = path.read_bytes()
+        if relative.as_posix() == BUNDLED_CORE_PATH:
+            # This exact public MIT wheel has its hash, members, licence and RECORD audited.
+            if sha256(content) != core["sha256"]:
+                raise ValueError("Bundled Core changed during publication inspection")
+            selected[relative.as_posix()] = content
+            continue
         try:
             text = content.decode("utf-8-sig")
         except UnicodeDecodeError as exc:
@@ -99,6 +117,10 @@ def source_files(root: Path) -> dict[str, bytes]:
         "assets/requirements-runtime.lock.txt", "assets/ollama-runtime.json", "assets/ocr-models.json",
         "licenses/models/gemma3-terms.txt", "licenses/models/gemma3-prohibited-use-policy.txt",
         "licenses/ocr/LICENSE-APACHE-2.0.txt", "licenses/ocr/NOTICE.txt",
+        BUNDLED_CORE_PATH, "assets/bundled-core.json", "scripts/bundled_core.py",
+        "licenses/core/LICENSE.txt", "licenses/core/NOTICE.md",
+        "全文OCR画像出力.bat", "source/simple_drawing/ocr_image.py",
+        "source/simple_drawing/ocr_image_export.py",
     }
     required.update("source/simple_drawing/" + name + ".py" for name in (
         "excel", "llm", "model_gui", "model_manager", "model_probe", "model_terms",
@@ -138,7 +160,9 @@ def build(root: Path, output: Path | None = None, *, check_only: bool = False) -
         "schema_version": 1,
         "package": "drawing-field-extractor-simple",
         "version": version,
-        "distribution_kind": "source-only-online-setup",
+        "distribution_kind": "source-with-bundled-core-online-setup",
+        "bundled_core": {"name": "docuworks-ctypes", "version": "1.0.1",
+                         "path": BUNDLED_CORE_PATH, "sha256": sha256(files[BUNDLED_CORE_PATH])},
         "files": [{"path": name, "bytes": len(content), "sha256": sha256(content)}
                   for name, content in sorted(files.items())],
     }

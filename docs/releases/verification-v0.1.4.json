@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "version": "0.1.4",
+  "published": false,
+  "archive": "drawing-field-extractor-simple-v0.1.4-source.zip",
+  "archive_bytes": 264765,
+  "sha256": "08a44b53f8935eb37f16444ee68f27595b133b0d69ac329923a021554837862f",
+  "source_files": 74,
+  "archive_members": 75,
+  "crc_and_all_member_sha": "passed",
+  "cpu_tests": {
+    "passed": 264,
+    "subtests_passed": 35,
+    "failed": 0
+  },
+  "real_saved_ocr_export": {
+    "pages": 4,
+    "regions": 442,
+    "warnings": 0,
+    "bat_exit_code": 0,
+    "original_and_ocr_hashes_unchanged": true,
+    "ocr_executed": false,
+    "llm_executed": false,
+    "sdk_executed": false
+  },
+  "A0_A1_300dpi_authored_geometry": "passed, synthetic OCR only",
+  "core_version": "1.0.1",
+  "core_wheel_unchanged": true,
+  "independent_review": "no material findings",
+  "scope": "OCR image export only; model accuracy and full new OCR pipeline not rerun",
+  "execution_assets_copy_audit": {
+    "native_inventory_no_mismatches_or_failures": true,
+    "selected_sha_checks": 16,
+    "full_model_blob_sha_not_repeated": true
+  }
+}

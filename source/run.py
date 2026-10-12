@@ -11,7 +11,7 @@ from simple_drawing.storage import local_path, read_json, write_json, now
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["prepare", "extract", "export", "internal-prepare", "models-gui"])
+    parser.add_argument("command", choices=["prepare", "extract", "export", "ocr-image", "internal-prepare", "models-gui"])
     parser.add_argument("--root", type=Path, default=SOURCE.parent)
     parser.add_argument("--run", help="Excel再出力対象の実行フォルダー（候補内の相対パス）。省略時は最新の完了済み抽出。")
     args = parser.parse_args()
@@ -36,6 +36,9 @@ def main():
     from filelock import FileLock, Timeout
     try:
         with FileLock(root / "data" / "operation.lock", timeout=0):
+            if args.command == "ocr-image":
+                from simple_drawing.ocr_image_export import export_ocr_images
+                return export_ocr_images(root)[0]
             if args.command == "export":
                 from simple_drawing.excel import reexport_excel
                 return reexport_excel(root, args.run)[0]
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     try:
         code = main()
     except KeyboardInterrupt:
-        print("中断しました。完成ページは保存されています。Excelは作成していません。", flush=True)
+        print("中断しました。完成した出力と処理記録は保存されています。", flush=True)
         code = 130
     except Exception as error:
         print("処理できません: " + str(error), flush=True)

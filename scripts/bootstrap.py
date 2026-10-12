@@ -233,6 +233,74 @@ def setup_dependencies(root, offline):
     write(marker, {"status": "complete", "manifest_sha256": signature, "packages": len(packages)})
 
 
+def bundled_core_manifest(root):
+    scripts = str(Path(__file__).resolve().parent)
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    from bundled_core import validate_core_bundle
+    return validate_core_bundle(root)
+
+
+def installed_core_ok(root, item):
+    """Compare installed code with the pinned wheel, not a mutable installed RECORD."""
+    site = root/"runtime/Lib/site-packages"
+    with zipfile.ZipFile(root/item["path"]) as bundle:
+        expected_sources = set()
+        for member in bundle.infolist():
+            if member.filename.endswith("/RECORD"):
+                # pip adds its own INSTALLER/direct_url metadata to installed RECORD.
+                continue
+            path = site.joinpath(*PurePosixPath(member.filename).parts)
+            try:
+                path.resolve().relative_to((root/"runtime").resolve())
+            except ValueError:
+                return False
+            if path.is_symlink() or not path.is_file() or path.read_bytes() != bundle.read(member):
+                return False
+            if member.filename.startswith("docuworks_ctypes/"):
+                expected_sources.add(member.filename)
+        actual_sources = {path.relative_to(site).as_posix()
+                          for path in (site/"docuworks_ctypes").rglob("*")
+                          if path.is_file() and "__pycache__" not in path.parts}
+        return actual_sources == expected_sources
+
+
+def setup_bundled_core(root):
+    """Install the user's MIT Core only from the validated ZIP member, without network."""
+    marker = root/"data/setup-core.json"
+    write(marker, {"status": "in_progress", "name": "docuworks-ctypes", "version": "1.0.1"})
+    try:
+        _install_bundled_core(root)
+    except (Exception, KeyboardInterrupt) as error:
+        write(marker, {"status": "failed", "name": "docuworks-ctypes", "version": "1.0.1",
+                       "reason": str(error) or type(error).__name__})
+        raise
+
+
+def _install_bundled_core(root):
+    item = bundled_core_manifest(root)
+    lock = root/"data/setup-core.lock.txt"
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    (root/"temp").mkdir(exist_ok=True)
+    lock.write_text(f"{item['name']}=={item['version']} --hash=sha256:{item['sha256']}\n",
+                    encoding="utf-8", newline="\n")
+    python = root/"runtime/python.exe"
+    if not installed_core_ok(root, item):
+        subprocess.run([str(python), "-I", "-B", "-X", "utf8", "-m", "pip", "--isolated",
+                        "--no-cache-dir", "install", "--prefix", str(root/"runtime"), "--no-user",
+                        "--force-reinstall", "--no-index", "--no-deps", "--find-links",
+                        str((root/item["path"]).parent), "--only-binary", ":all:", "--require-hashes",
+                        "--no-compile", "--no-warn-script-location", "--disable-pip-version-check",
+                        "-r", str(lock)], env=pip_environment(root), check=True)
+    if not installed_core_ok(root, item):
+        raise RuntimeError("同封Coreの導入結果が固定配布物と一致しません")
+    subprocess.run([str(python), "-I", "-B", "-X", "utf8", "-m", "pip", "--isolated",
+                    "--no-cache-dir", "check"], env=pip_environment(root), check=True)
+    write(root/"data/setup-core.json", {"status": "complete", "name": item["name"],
+          "version": item["version"], "wheel_sha256": item["sha256"],
+          "manifest_sha256": sha(root/"assets/bundled-core.json"), "source": "bundled-local-wheel"})
+
+
 def setup_ocr(root, offline):
     original = root/"assets/ocr-models.json"
     models = read(original)
@@ -332,23 +400,28 @@ def main():
         (root/name).mkdir(exist_ok=True)
     sys.path.insert(0, str(root/"source"))
     with operation_lock(root):
+        write(root/"data/setup-complete.json", {"status": "in_progress", "app_version": "0.1.4"})
+        bundled_core_manifest(root)
         check_capacity(root)
-        print("[1/5] Pythonライブラリ", flush=True)
+        print("[1/6] Pythonライブラリ", flush=True)
         setup_dependencies(root, args.offline)
-        print("[2/5] OCRモデル", flush=True)
+        print("[2/6] 同封Core 1.0.1（ローカル導入）", flush=True)
+        setup_bundled_core(root)
+        print("[3/6] OCRモデル", flush=True)
         setup_ocr(root, args.offline)
-        print("[3/5] Ollama", flush=True)
+        print("[4/6] Ollama", flush=True)
         setup_ollama(root, args.offline)
-        print("[4/5] GUI・GPU環境確認", flush=True)
+        print("[5/6] GUI・GPU環境確認", flush=True)
         check_runtime(root)
     # ModelManager uses the same lock; do not hold a second copy while invoking it.
     if args.skip_model:
         print("構成部品の準備が完了しました。Gemma4の導入・確認は未完了です。", flush=True)
         return 0
-    print("[5/5] Gemma4の導入と動作確認", flush=True)
+    print("[6/6] Gemma4の導入と動作確認", flush=True)
     setup_model(root, args.offline)
     model_record = read(root/"data/model-registry.json")["models"]["gemma4-q8"]
-    write(root/"data/setup-complete.json", {"status": "complete", "app_version": "0.1.2",
+    write(root/"data/setup-complete.json", {"status": "complete", "app_version": "0.1.4",
+                                          "bundled_core": read(root/"data/setup-core.json"),
                                           "python_packages_sha256": sha(root/"assets/python-packages.json"),
                                           "ollama_archive_sha256": read(root/"assets/ollama-runtime.json")["sha256"],
                                           "model": "gemma4:e4b-it-q8_0",

@@ -2,9 +2,17 @@
 
 ## この公開ZIPの範囲
 
-このZIPは自作のPythonコード、BAT、取得処理、設定例、説明書、テストコード、取得先とハッシュの情報、ライセンス参照文書を公開するものです。自作部分の著作権表示とMIT本文は`LICENSE`にあります。既存のMIT版から流用した自作コードの著作権表示も保持しています。
+このZIPは自作のPythonコード、BAT、取得処理、設定例、説明書、テストコード、取得先とハッシュの情報、ライセンス参照文書と、自作のDocuWorks Core 1.0.1を配布するものです。自作部分の著作権表示とMIT本文は`LICENSE`にあります。既存のMIT版から流用した自作コードの著作権表示も保持しています。
 
-Python、依存パッケージ、DLL、Ollama、モデル、入力図面、OCR結果、実行履歴はZIPの配布対象に含めません。自作部分のMITは、外部から取得するソフトウェア・モデル・規約本文には適用されません。
+Python、外部の依存パッケージ、第三者DLL、Ollama、モデル、入力図面、OCR結果、実行履歴はZIPの配布対象に含めません。自作部分のMITは、外部から取得するソフトウェア・モデル・規約本文には適用されません。
+
+## 同封するDocuWorks Core 1.0.1
+
+`bundled/core/docuworks_ctypes-1.0.1-py3-none-any.whl`は、[dw-ocr v0.8.1で公開した配布物](https://github.com/gogobousousannrinnsha/dw-ocr/releases/tag/v0.8.1)を変更せずに同封します。MIT、Copyright (c) 2026 gogobousousannrinnshaです。MIT本文・著作権表示・パッケージの権利情報をwheel内に保持します。
+
+固定する配布物は48,173 bytes、SHA-256は`7ea3a6d1623238180ccb400237a753b616dccf72761ba83d97fee1b55f7f5f58`です。取得元と検査情報は`assets/bundled-core.json`に記録し、初期設定ではネット取得せず、同封wheelを検査してフォルダー内runtimeへ導入します。
+
+これはPythonで記述した自作APIラッパーの配布です。DocuWorks本体、富士フイルムのSDK・ヘッダー・DLL、Integrationsは同封しません。DocuWorks製品の使用・SDKの利用には、各製品の条件が別途適用されます。現在のアプリはPDF入力のみで、Coreの同封はXDW入力処理の実装・動作確認を意味しません。
 
 ## 初期設定で取得する資産
 
