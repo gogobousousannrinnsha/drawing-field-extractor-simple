@@ -1,0 +1,10 @@
+{
+  "version": "0.35.1",
+  "filename": "ollama-windows-amd64.zip",
+  "url": "https://github.com/ollama/ollama/releases/download/v0.35.1/ollama-windows-amd64.zip",
+  "bytes": 1471094402,
+  "sha256": "dc50b9ca7f9023c86525012632cd1615b093d0407987444a7f62ecab617e8e93",
+  "executable_sha256": "3cc17c238b081adf2bd3a206e52a063b637af1bf283d95b4ffd73a2bdec8b027",
+  "license": "MIT; bundled native/vendor components have separate terms",
+  "metadata_url": "https://api.github.com/repos/ollama/ollama/releases/tags/v0.35.1"
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "version": "3.13.15",
+  "architecture": "amd64",
+  "distribution": "CPython official Windows MSI payloads",
+  "source": "https://www.python.org/ftp/python/3.13.15/amd64/",
+  "license_url": "https://docs.python.org/3.13/license.html",
+  "signer_subject": "CN=Python Software Foundation, O=Python Software Foundation, L=Beaverton, S=Oregon, C=US",
+  "signer_thumbprint": "847785B686B2D3879731FA9AA3F1F5D48E85D99E",
+  "assets": [
+    {"name": "core.msi", "url": "https://www.python.org/ftp/python/3.13.15/amd64/core.msi", "size": 2080768, "sha256": "eff25b160b54a77c5953cf5803fc147a1ced084513265dfefc227583b1355484"},
+    {"name": "exe.msi", "url": "https://www.python.org/ftp/python/3.13.15/amd64/exe.msi", "size": 860160, "sha256": "47f02452bde1f05b4d06fb93841ce380624c882ef75caddd1b1207d1a36bb4d2"},
+    {"name": "lib.msi", "url": "https://www.python.org/ftp/python/3.13.15/amd64/lib.msi", "size": 7290880, "sha256": "6d3130114d7f57eaa33d86e8366a669dfc73cfe8df772bef93ce2d9ea799f751"},
+    {"name": "tcltk.msi", "url": "https://www.python.org/ftp/python/3.13.15/amd64/tcltk.msi", "size": 3280896, "sha256": "ec1e0fe1188969a48da63f24536183c95fc0393cf93588c646b253e91dc9b179"},
+    {"name": "dev.msi", "url": "https://www.python.org/ftp/python/3.13.15/amd64/dev.msi", "size": 495616, "sha256": "d3035f53e51ce28082a8be714e052d39d4f485d7257fa8f9862c4919da4bdd9a"}
+  ],
+  "notes": [
+    "MSI databases and embedded cabinets are read only; installer actions, registry writes, shortcuts and PATH changes are never executed.",
+    "pip.msi has no file payload; lib.msi contains ensurepip and its bundled pip 26.2.1 wheel.",
+    "The extracted runtime retains the official LICENSE.txt and Tcl/Tk license files."
+  ]
+}

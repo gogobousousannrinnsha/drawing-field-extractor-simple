@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "package": "drawing-field-extractor-simple",
+  "version": "0.1.2",
+  "distribution_kind": "source-only-online-setup",
+  "files": [
+    {
+      "path": "Excel再出力.bat",
+      "bytes": 687,
+      "sha256": "6b5b4d666084c6ee3e633aec8fede2740e4de77f2671764ac01c370be4619350"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1078,
+      "sha256": "3883fc25fe83af3f0fea9c55321845c5c7865b2ebce54657463f7136790e214d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 11875,
+      "sha256": "4d2c22e27b9399dd90aa4cf8fcbafa300d7ba07b49c834af33e38443d4f89991"
+    },
+    {
+      "path": "Saluki追加設定.bat",
+      "bytes": 404,
+      "sha256": "3fd1ee8516d05bd308ccc69c3363969d8c3167f0cda0bd791c6a2c5670fc9c68"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 5027,
+      "sha256": "601c125f3ade0be05e1c22a43865a056e03c955c6a96dfa3bb950025ea7cddda"
+    },
+    {
+      "path": "assets/ocr-models.json",
+      "bytes": 1289,
+      "sha256": "c5ba959a793ea6fa586c20dc2102f74299ab6fbae93b5ebacaf1f95af3d8b7ae"
+    },
+    {
+      "path": "assets/ollama-runtime.json",
+      "bytes": 518,
+      "sha256": "ce482b722e2d0f85578edd93f0bb0b04f88d2c3e4a2d0fd91fb4dcc24f0022a3"
+    },
+    {
+      "path": "assets/python-packages.json",
+      "bytes": 46399,
+      "sha256": "4a6cb36b33d7f0e37f9705b8b889022b58b612e64a71a165933b1ab1078c2002"
+    },
+    {
+      "path": "assets/python-runtime.json",
+      "bytes": 1736,
+      "sha256": "fd2541c39df185d2aba38b7e8417ea54d38a1511ac6881cbcd790c0f61d360af"
+    },
+    {
+      "path": "assets/requirements-runtime.lock.txt",
+      "bytes": 21669,
+      "sha256": "c9f44de1e9d2fd6e79d66bf95b3add833ad24385f4649bde0976733ffbcc4002"
+    },
+    {
+      "path": "assets/saluki-assets.json",
+      "bytes": 12714,
+      "sha256": "39fb6b2b9a87d92f46a88f5ed70b235c0aa9fc52b06684dad986fbc5b36af9a4"
+    },
+    {
+      "path": "licenses/README.md",
+      "bytes": 2199,
+      "sha256": "41f36594f0e5e52ecb19d0656cbf490352d3ac5b5c47edcbc400d34fd4cb2fd5"
+    },
+    {
+      "path": "licenses/models/gemma3-NOTICE.txt",
+      "bytes": 97,
+      "sha256": "66f856d7da72797f528fca46b7c80634ab481f917bfe020960e123d84b19f75f"
+    },
+    {
+      "path": "licenses/models/gemma3-prohibited-use-policy.txt",
+      "bytes": 4203,
+      "sha256": "32e4032bb8934ee14d1c61157d42fd307ee70c4a7ae0b9781e7dbae1288886ef"
+    },
+    {
+      "path": "licenses/models/gemma3-terms-2024-04-01.txt",
+      "bytes": 8826,
+      "sha256": "ddb7f2f8ec61681451706f53d3fff4e387cc0d1127d1c8625e1feda64fb58683"
+    },
+    {
+      "path": "licenses/models/gemma3-terms.txt",
+      "bytes": 9276,
+      "sha256": "eb1dd936eee8cf0f3c84573a823607f2ec1e89f1e0ab7d6553bebd95407e0139"
+    },
+    {
+      "path": "licenses/models/gemma4-apache-2.0.txt",
+      "bytes": 10519,
+      "sha256": "8698098c9b11ea3d177f44426588a94de7b43b57ad3bc81523aa02e0040a90e4"
+    },
+    {
+      "path": "licenses/models/sources.json",
+      "bytes": 2621,
+      "sha256": "c629dca0761e26ae0bb849542b73f2037c5d899caf50ec3b5687b8dabfca930b"
+    },
+    {
+      "path": "licenses/ocr/LICENSE-APACHE-2.0.txt",
+      "bytes": 11376,
+      "sha256": "3840c5c0c61c294264d2dd77b8777be6ddd90121ef4e0e64abcd22edea581d6e"
+    },
+    {
+      "path": "licenses/ocr/NOTICE.txt",
+      "bytes": 388,
+      "sha256": "c1a0801d1445be1ebc9092c3f47cf8551577aec0bf62fff45c9ea092732052dd"
+    },
+    {
+      "path": "scripts/bootstrap.py",
+      "bytes": 18748,
+      "sha256": "46e35b892c8a45bf38588da559673e003e40d90ac83c3aa880d8efd7230ad571"
+    },
+    {
+      "path": "scripts/build_source_zip.py",
+      "bytes": 9235,
+      "sha256": "4edf5ff2932cf3bdf98d86a53a7aea474443275b4948c921b97aa020a6b8a71a"
+    },
+    {
+      "path": "scripts/setup.ps1",
+      "bytes": 2277,
+      "sha256": "c2046072da70c5b11e26a49863fe0ec96f7f6e1f3596d8c7a73d5d7e87167e7f"
+    },
+    {
+      "path": "scripts/setup_python.ps1",
+      "bytes": 18570,
+      "sha256": "6d2251e7ea5ecb97139159ac8fdae4ccbb1c46a8cff8e86eedbe279544bdafeb"
+    },
+    {
+      "path": "scripts/setup_saluki.py",
+      "bytes": 12639,
+      "sha256": "715fd069c77b04e1212080a6b2e6ef8ac6782a64135948dad49b6d35427dd3cf"
+    },
+    {
+      "path": "scripts/verify_setup.py",
+      "bytes": 2944,
+      "sha256": "3a9c3d8569c6ad320316d92da00d738fd69ac3905e3c27606d7c6847ad473c17"
+    },
+    {
+      "path": "source/LICENSE",
+      "bytes": 1078,
+      "sha256": "3883fc25fe83af3f0fea9c55321845c5c7865b2ebce54657463f7136790e214d"
+    },
+    {
+      "path": "source/pyproject.toml",
+      "bytes": 708,
+      "sha256": "5c310c6f7030e1617d4c59c7c1001bed99540cc646f0b6cd438b8a941184e707"
+    },
+    {
+      "path": "source/run.py",
+      "bytes": 4804,
+      "sha256": "16c7926aa4acb35ba37844710d60232eecb870d28f62de21db0f4c340f42b068"
+    },
+    {
+      "path": "source/simple_drawing/__init__.py",
+      "bytes": 85,
+      "sha256": "25ab0b55e4ff6d85d6f70971507beecaaf08a485b99e5eb7e2dd089b5d830a25"
+    },
+    {
+      "path": "source/simple_drawing/excel.py",
+      "bytes": 11175,
+      "sha256": "24e8c32cccb41fa5463c35566c61697a24d62dcc7acef1f23dc4bc49dd894505"
+    },
+    {
+      "path": "source/simple_drawing/llm.py",
+      "bytes": 26660,
+      "sha256": "11a927dd86d75c5e9fac2dddaa089976c95ac7bcbadb929a300a3240f829897f"
+    },
+    {
+      "path": "source/simple_drawing/model_gui.py",
+      "bytes": 21075,
+      "sha256": "6061e1f8eb6191bd22b9dad5c924bded60a659c9534981baa22fc96bd5fce29c"
+    },
+    {
+      "path": "source/simple_drawing/model_manager.py",
+      "bytes": 28740,
+      "sha256": "d74c35abb13ff8d6bd702b84329a0b3be07aa9ffd42993646c09a8a12ae53201"
+    },
+    {
+      "path": "source/simple_drawing/model_probe.py",
+      "bytes": 1973,
+      "sha256": "f77902cef36c57e0163fa8932d4d2094b6d38522fe4bda1e73e884882920d621"
+    },
+    {
+      "path": "source/simple_drawing/model_terms.py",
+      "bytes": 5653,
+      "sha256": "e3169d4a05dd31d81288201d84fca6403e2d675f2fa897be34bd8273e70e1eb0"
+    },
+    {
+      "path": "source/simple_drawing/pdf_ocr.py",
+      "bytes": 20983,
+      "sha256": "d89d8df6ca22b22d25f145305bc07db07747ceb1add018d0781b8607abbc35f4"
+    },
+    {
+      "path": "source/simple_drawing/profiles.py",
+      "bytes": 2431,
+      "sha256": "5e64313b497d1b11b2ef8869e40c28cda6b166750a6311ffec242538774abbe0"
+    },
+    {
+      "path": "source/simple_drawing/saluki.py",
+      "bytes": 23322,
+      "sha256": "1ff900b14d4e4cf7a1e37a6e7affb0445cae73a638ffded34e6c07427f1a0139"
+    },
+    {
+      "path": "source/simple_drawing/settings.py",
+      "bytes": 1975,
+      "sha256": "01a354ebdceb7caa04547a12aff9b5f635d64ff1c36651648cef2288aa5f3463"
+    },
+    {
+      "path": "source/simple_drawing/storage.py",
+      "bytes": 2313,
+      "sha256": "17d8a8b6634e3fc791b453465ff554b4056782a73e39c96b7b4f76de7ae1f26d"
+    },
+    {
+      "path": "source/simple_drawing/workflow.py",
+      "bytes": 23363,
+      "sha256": "da51879c19160c2542e6d8b5b63b144c940b09fc5698a74e86ed85cccb114915"
+    },
+    {
+      "path": "source/tests/test_bootstrap.py",
+      "bytes": 7764,
+      "sha256": "1caa83f21e7152b69e21c54502a2fd4d0dc0eaf3f268e9818670c03883ab88cd"
+    },
+    {
+      "path": "source/tests/test_excel_coordinates.py",
+      "bytes": 10029,
+      "sha256": "af4f8790730471122830955e655a00b52ca899c2cc39b5f4c001b0edd6f0ac05"
+    },
+    {
+      "path": "source/tests/test_llm.py",
+      "bytes": 15460,
+      "sha256": "d5b58e02eaef4446f83c18f240013d2aded4313aaa57b80a4ccf0fa3edfaaf4b"
+    },
+    {
+      "path": "source/tests/test_model_gui.py",
+      "bytes": 9013,
+      "sha256": "45a437e59e4b5e835528281cf9868d5ebcfdb4ac0f6681d1fdd063f5e1efacc6"
+    },
+    {
+      "path": "source/tests/test_model_manager.py",
+      "bytes": 21709,
+      "sha256": "779d4e352ea18cf27f77ee9b726936dd1d579f112e220e9c0f1d31ab605cc3fa"
+    },
+    {
+      "path": "source/tests/test_model_profiles.py",
+      "bytes": 16821,
+      "sha256": "ad56cca609085d2a9a4ccf54ee81e12b076b0390d2e9ccfe71b68d034f1c46db"
+    },
+    {
+      "path": "source/tests/test_models_setup.py",
+      "bytes": 12927,
+      "sha256": "591c4855f54ad1dec8d0ae1b06a42650be547d438fa34c4886c43be4b04d0533"
+    },
+    {
+      "path": "source/tests/test_pdf_ocr.py",
+      "bytes": 13136,
+      "sha256": "5ebca5ecb73802f468ba2319b23f425c414b1382ee82db522a4da672ec273e13"
+    },
+    {
+      "path": "source/tests/test_python_setup.py",
+      "bytes": 11232,
+      "sha256": "eeac844e67636e9e0147e6035e4744f98cb6d6ee565a74198747e8f7dc8e89c3"
+    },
+    {
+      "path": "source/tests/test_saluki.py",
+      "bytes": 15768,
+      "sha256": "058dbc28cdc506feed20959a83ee2c3c38575b834da2b80c931f05c881640201"
+    },
+    {
+      "path": "source/tests/test_setup_saluki.py",
+      "bytes": 11399,
+      "sha256": "48ac1e4da5a0f66e1bc0c18cc289ef6680e1e03e9e66df66895be8859bf7297a"
+    },
+    {
+      "path": "source/tests/test_storage.py",
+      "bytes": 4130,
+      "sha256": "07792feb1e4a3d6dec5a42131a192f3249dcf7be5ec1a7917bc30a7fccda464e"
+    },
+    {
+      "path": "source/tests/test_workflow.py",
+      "bytes": 18942,
+      "sha256": "3339599f36c3a02ce1b5e7cdf4e1ab27764a45dfc429617223ee881136e082cf"
+    },
+    {
+      "path": "モデル管理.bat",
+      "bytes": 1122,
+      "sha256": "b23072ab5f4ce4c8c4dcca7bea26dd7d7dcd226c8e2064c6fd234349cc6deee7"
+    },
+    {
+      "path": "初期設定.bat",
+      "bytes": 264,
+      "sha256": "79638839bff22e7652092c3f8ee0542fbe2615c3c42a9629f6709723d894c312"
+    },
+    {
+      "path": "前処理.bat",
+      "bytes": 896,
+      "sha256": "2ffc3b7581c095be61c08ad409fe093cca6a29559f661e80ca7613688c645a8c"
+    },
+    {
+      "path": "実行設定.json",
+      "bytes": 77,
+      "sha256": "b3b8073a4c171668bcff58cb360603b59f502ede32303d87be5d1d4f676205a7"
+    },
+    {
+      "path": "抽出.bat",
+      "bytes": 688,
+      "sha256": "6410b907cd3f057b4bad9278a9a80d8f8a6e4271e9763cdd9ef700a0eb4ef487"
+    },
+    {
+      "path": "抽出設定.json",
+      "bytes": 77,
+      "sha256": "9d0b56ccadf3b2a8ac27d0375f7a89cf879a661954dc5109c605d408dfe51830"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+/runtime/
+/models/
+/input/
+/data/
+/logs/
+/downloads/
+/temp/
+/verification/
+/dist/
+**/__pycache__/
+*.py[cod]

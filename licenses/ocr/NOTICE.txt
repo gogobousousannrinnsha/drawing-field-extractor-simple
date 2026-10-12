@@ -1,0 +1,5 @@
+PP-OCRv6_medium_det and PP-OCRv6_medium_rec are developed by PaddlePaddle / the PaddleOCR team.
+Official model cards identify Apache-2.0:
+https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_det
+https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec
+Weights are unmodified; original download URLs and file hashes are retained in assets/ocr-models.json and models/ocr/model-manifest.json.

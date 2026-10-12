@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "path": "licenses/models/gemma3-terms.txt",
+      "title": "Gemma Terms of Use",
+      "official_url": "https://ai.google.dev/gemma/terms",
+      "request_url": "https://ai.google.dev/gemma/terms?hl=en",
+      "retrieved_utc_date": "2026-10-12",
+      "document_version": "2026-04-01",
+      "sha256": "eb1dd936eee8cf0f3c84573a823607f2ec1e89f1e0ab7d6553bebd95407e0139",
+      "source_html_sha256": "a3aded7f97a7a513774e7578b901dfea3e63c644e25d27fccc822cd8f259f8fe",
+      "bytes": 9276,
+      "transformation": "Official article body extracted; HTML layout and whitespace normalized."
+    },
+    {
+      "path": "licenses/models/gemma3-terms-2024-04-01.txt",
+      "title": "Gemma Terms of Use (archived)",
+      "official_url": "https://ai.google.dev/gemma/terms-archive/terms_04_01_24",
+      "request_url": "https://ai.google.dev/gemma/terms-archive/terms_04_01_24?hl=en",
+      "retrieved_utc_date": "2026-10-12",
+      "document_version": "2024-04-01",
+      "sha256": "ddb7f2f8ec61681451706f53d3fff4e387cc0d1127d1c8625e1feda64fb58683",
+      "source_html_sha256": "2f50706e1cac27e1d491c7039ff112367d9d5e8e7aaabe764b6af45317bc5761",
+      "bytes": 8826,
+      "transformation": "Official article body extracted; HTML layout and whitespace normalized."
+    },
+    {
+      "path": "licenses/models/gemma3-prohibited-use-policy.txt",
+      "title": "Gemma Prohibited Use Policy",
+      "official_url": "https://ai.google.dev/gemma/prohibited_use_policy",
+      "request_url": "https://ai.google.dev/gemma/prohibited_use_policy?hl=en",
+      "retrieved_utc_date": "2026-10-12",
+      "document_version": "2024-02-21",
+      "sha256": "32e4032bb8934ee14d1c61157d42fd307ee70c4a7ae0b9781e7dbae1288886ef",
+      "source_html_sha256": "e752766a024f6c4129bc27a1b5390f8f3542f3ce9ea2c6313496f9350b050011",
+      "bytes": 4203,
+      "transformation": "Official article body extracted; HTML layout and whitespace normalized."
+    },
+    {
+      "path": "licenses/models/gemma4-apache-2.0.txt",
+      "title": "Apache License 2.0 (Gemma 4 official page)",
+      "official_url": "https://ai.google.dev/gemma/apache_2",
+      "request_url": "https://ai.google.dev/gemma/apache_2?hl=en",
+      "retrieved_utc_date": "2026-10-12",
+      "document_version": "2004-01",
+      "sha256": "8698098c9b11ea3d177f44426588a94de7b43b57ad3bc81523aa02e0040a90e4",
+      "source_html_sha256": "1b58abd05fcb359dd7212cc681a753d48db792fce572dd9a81e312cdeec8f6c2",
+      "bytes": 10519,
+      "transformation": "Official article body extracted; HTML layout and whitespace normalized."
+    }
+  ]
+}

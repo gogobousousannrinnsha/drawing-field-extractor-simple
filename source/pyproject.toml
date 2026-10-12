@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drawing-field-extractor-simple"
+version = "0.1.2"
+description = "Local single-field PDF drawing extraction with folder-contained online setup"
+requires-python = "==3.13.*"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["pypdfium2==5.13.0", "pypdf==6.20.0", "pydantic==2.13.5", "httpx==0.28.1", "Pillow==12.3.0", "XlsxWriter==3.2.9", "filelock==3.32.5", "psutil==7.2.2", "numpy==2.3.5", "paddleocr==3.7.0", "paddlex==3.7.2", "paddlepaddle-gpu==3.2.2"]
+
+[tool.setuptools.packages.find]
+include = ["simple_drawing*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
