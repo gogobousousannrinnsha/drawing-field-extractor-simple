@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import sys
 import time
+from contextlib import ExitStack
 
 from .storage import digest, local_path, new_id, now, read_json, relative, sha, write_json
 from .settings import ExecutionSettings, ExtractionSettings
@@ -49,8 +50,11 @@ def cache_valid(folder):
         return False
 
 def save_source(root, source):
+    suffix = source.suffix.casefold()
+    if suffix not in (".pdf", ".xdw"):
+        raise ValueError("原本はPDFまたはXDWで指定してください。")
     source_hash = sha(source)
-    destination = root / "data" / "sources" / (source_hash + ".pdf")
+    destination = root / "data" / "sources" / (source_hash + suffix)
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists() and sha(destination) == source_hash:
         return source_hash, relative(root, destination)
@@ -66,8 +70,7 @@ def prepare(root, *, inspector=None, renderer=None, recognizer=None, producer=No
     """Worker owns the OCR engine; process exit releases all GPU allocations."""
     root = Path(root).resolve()
     from .pdf_ocr import inspect_pdf, render_page, recognize_page, OCRSession
-    inspector = inspector or inspect_pdf
-    renderer = renderer or render_page
+    inspector_override, renderer_override = inspector, renderer
     recognizer_override = recognizer
     recognizer = recognizer or recognize_page
     settings = ExecutionSettings.model_validate(read_json(root / "実行設定.json"))
@@ -77,10 +80,10 @@ def prepare(root, *, inspector=None, renderer=None, recognizer=None, producer=No
     input_folder = input_folder.resolve(strict=True)
     if not input_folder.is_dir():
         raise ValueError("入力先はフォルダーで指定してください。")
-    sources = sorted((p for p in input_folder.iterdir() if p.is_file() and p.suffix.casefold() == ".pdf"),
+    sources = sorted((p for p in input_folder.iterdir() if p.is_file() and p.suffix.casefold() in (".pdf", ".xdw")),
         key=lambda p: (p.name.casefold(), p.name))
     if not sources:
-        raise ValueError("入力フォルダー直下にPDFがありません。")
+        raise ValueError("入力フォルダー直下にPDFまたはXDWがありません。")
     producer = producer or producer_contract(root)
     producer_sha = digest(producer)
     batch_id = new_id()
@@ -94,13 +97,32 @@ def prepare(root, *, inspector=None, renderer=None, recognizer=None, producer=No
     try:
         total = 0
         for source in sources:
-            document = {"name": source.name, "pages": []}
+            source_type = source.suffix.casefold()[1:]
+            document = {"name": source.name, "source_type": source_type, "pages": [],
+                        "producer_sha256": producer_sha}
             batch["documents"].append(document)
-            progress(source.name, 0, "原本保存・PDF検査", 0, 0)
+            progress(source.name, 0, "原本保存・" + source_type.upper() + "検査", 0, 0)
             try:
                 source_hash, source_ref = save_source(root, source)
                 document.update(sha256=source_hash, source=source_ref)
-                document["pages"] = inspector(local_path(root, source_ref))
+                saved_source = local_path(root, source_ref)
+                if source_type == "xdw" and inspector_override is None:
+                    from .xdw_input import XdwInput
+                    with XdwInput(saved_source) as xdw:
+                        document["pages"] = xdw.inspect()
+                        renderer_info = xdw.renderer_contract()
+                    implementation = root / "source" / "simple_drawing" / "xdw_input.py"
+                    document["producer"] = {"recognition": producer, "source_type": "xdw",
+                        "implementation_sha256": sha(implementation), "renderer": renderer_info}
+                    document["producer_sha256"] = digest(document["producer"])
+                else:
+                    document["pages"] = (inspector_override or inspect_pdf)(saved_source)
+                    if source_type == "xdw":
+                        document["producer"] = {"recognition": producer, "source_type": "xdw",
+                                                "renderer": {"injected": True}}
+                        document["producer_sha256"] = digest(document["producer"])
+                if sha(source) != source_hash or sha(saved_source) != source_hash:
+                    raise ValueError("原本検査中に原本または保存コピーが変更されました。")
                 total += len(document["pages"])
             except Exception as error:
                 document["error"] = str(error)
@@ -111,50 +133,77 @@ def prepare(root, *, inspector=None, renderer=None, recognizer=None, producer=No
         for document in batch["documents"]:
             if document.get("error"):
                 continue
-            for page in document["pages"]:
-                folder = root / "data" / "cache" / producer_sha / document["sha256"] / str(page["number"])
-                page["cache"] = relative(root, folder)
-                try:
-                    if cache_valid(folder):
-                        saved = read_json(folder / "ocr.json")
-                        if saved["producer_sha256"] != producer_sha or saved["source_sha256"] != document["sha256"]:
-                            raise ValueError("OCRキャッシュの原本・作成条件が一致しません。")
-                        batch["reused_pages"] += 1
-                        progress(document["name"], page["number"], "保存済みOCRを再利用", batch["completed_pages"], batch["failed_pages"])
-                    else:
-                        folder.parent.mkdir(parents=True, exist_ok=True)
-                        stage = folder.with_name(folder.name + ".pending-" + new_id())
-                        stage.mkdir()
-                        started = time.perf_counter()
-                        progress(document["name"], page["number"], "300dpi画像化", batch["completed_pages"], batch["failed_pages"])
-                        rendered = renderer(local_path(root, document["source"]), page["number"], stage / "page.png")
-                        page.update(rendered)
-                        progress(document["name"], page["number"], "全文OCR", batch["completed_pages"], batch["failed_pages"])
-                        if recognizer_override is None:
-                            if session is None:
-                                session = OCRSession(root / "models" / "ocr")
-                            regions, raw = recognizer(stage / "page.png", rendered, root / "models" / "ocr", stage / "scratch", session=session)
+            with ExitStack() as input_stack:
+                xdw = None
+                document_producer_sha = document["producer_sha256"]
+                for page in document["pages"]:
+                    folder = root / "data" / "cache" / document_producer_sha / document["sha256"] / str(page["number"])
+                    page["cache"] = relative(root, folder)
+                    try:
+                        if cache_valid(folder):
+                            saved = read_json(folder / "ocr.json")
+                            if saved["producer_sha256"] != document_producer_sha or saved["source_sha256"] != document["sha256"]:
+                                raise ValueError("OCRキャッシュの原本・作成条件が一致しません。")
+                            for key in ("number", "width_mm", "height_mm", "rotation"):
+                                if key in page and saved["page"].get(key) != page[key]:
+                                    raise ValueError("保存OCRと原本のページ寸法・向きが一致しません。")
+                            expected_basis = dict(page.get("dimension_basis", {}))
+                            saved_basis = dict(saved["page"].get("dimension_basis", {}))
+                            if document["source_type"] == "xdw":
+                                # Inspection predicts raster dimensions. SDK rendering
+                                # records the actual BMP dimensions in the saved page.
+                                expected_basis.pop("raster_size_basis", None)
+                                saved_basis.pop("raster_size_basis", None)
+                            if saved_basis != expected_basis:
+                                raise ValueError("保存OCRと原本のページ寸法の由来が一致しません。")
+                            page.update(saved["page"])
+                            batch["reused_pages"] += 1
+                            progress(document["name"], page["number"], "保存済みOCRを再利用", batch["completed_pages"], batch["failed_pages"])
                         else:
-                            regions, raw = recognizer(stage / "page.png", rendered, root / "models" / "ocr", stage / "scratch")
-                        write_json(stage / "raw.json", raw)
-                        write_json(stage / "ocr.json", {"version": 1, "page": rendered, "regions": regions,
-                            "source_sha256": document["sha256"], "producer_sha256": producer_sha,
-                            "seconds": time.perf_counter() - started})
-                        write_json(stage / "complete.json", {"version": 1, "finished_at": now(),
-                            "files": {name: sha(stage / name) for name in ["page.png", "raw.json", "ocr.json"]}})
-                        if folder.exists():
-                            # Keep damaged cache for diagnosis instead of accepting it.
-                            damaged = folder.with_name(folder.name + ".damaged-" + new_id())
-                            os.rename(folder, damaged)
-                        os.rename(stage, folder)
-                        batch["ocr_pages"] += 1
-                    page["complete_sha256"] = sha(folder / "complete.json")
-                    batch["completed_pages"] += 1
-                except Exception as error:
-                    page["error"] = str(error)
-                    batch["failed_pages"] += 1
-                    progress(document["name"], page["number"], "処理失敗: " + str(error), batch["completed_pages"], batch["failed_pages"])
-                write_json(batch_path, batch)
+                            folder.parent.mkdir(parents=True, exist_ok=True)
+                            stage = folder.with_name(folder.name + ".pending-" + new_id())
+                            stage.mkdir()
+                            started = time.perf_counter()
+                            progress(document["name"], page["number"], "300dpi画像化", batch["completed_pages"], batch["failed_pages"])
+                            saved_source = local_path(root, document["source"])
+                            if document["source_type"] == "xdw" and renderer_override is None:
+                                from .xdw_input import XdwInput
+                                if xdw is None:
+                                    xdw = input_stack.enter_context(XdwInput(saved_source))
+                                if xdw.renderer_contract() != document["producer"]["renderer"]:
+                                    raise ValueError("検査後にDocuWorks画像化環境が変更されました。")
+                                rendered = xdw.render(page["number"], stage / "page.png")
+                            else:
+                                rendered = (renderer_override or render_page)(saved_source, page["number"], stage / "page.png")
+                            page.update(rendered)
+                            progress(document["name"], page["number"], "全文OCR", batch["completed_pages"], batch["failed_pages"])
+                            if recognizer_override is None:
+                                if session is None:
+                                    session = OCRSession(root / "models" / "ocr")
+                                regions, raw = recognizer(stage / "page.png", rendered, root / "models" / "ocr", stage / "scratch", session=session)
+                            else:
+                                regions, raw = recognizer(stage / "page.png", rendered, root / "models" / "ocr", stage / "scratch")
+                            write_json(stage / "raw.json", raw)
+                            write_json(stage / "ocr.json", {"version": 1, "page": rendered, "regions": regions,
+                                "source_sha256": document["sha256"], "producer_sha256": document_producer_sha,
+                                "seconds": time.perf_counter() - started})
+                            write_json(stage / "complete.json", {"version": 1, "finished_at": now(),
+                                "files": {name: sha(stage / name) for name in ["page.png", "raw.json", "ocr.json"]}})
+                            if sha(saved_source) != document["sha256"]:
+                                raise ValueError("画像化・OCR中に保存原本が変更されました。")
+                            if folder.exists():
+                                # Keep damaged cache for diagnosis instead of accepting it.
+                                damaged = folder.with_name(folder.name + ".damaged-" + new_id())
+                                os.rename(folder, damaged)
+                            os.rename(stage, folder)
+                            batch["ocr_pages"] += 1
+                        page["complete_sha256"] = sha(folder / "complete.json")
+                        batch["completed_pages"] += 1
+                    except Exception as error:
+                        page["error"] = str(error)
+                        batch["failed_pages"] += 1
+                        progress(document["name"], page["number"], "処理失敗: " + str(error), batch["completed_pages"], batch["failed_pages"])
+                    write_json(batch_path, batch)
         batch["status"] = "partial" if batch["failed_pages"] or any(d.get("error") for d in batch["documents"]) else "complete"
         batch["finished_at"] = now()
         write_json(batch_path, batch)

@@ -34,7 +34,7 @@ def _page_ocr(root, batch, document, page):
     if sha(folder/"complete.json") != page["complete_sha256"] or not cache_valid(folder):
         raise ValueError("保存されたページ画像・OCRが破損しています。前処理を再実行してください。")
     ocr = read_json(folder/"ocr.json")
-    if (ocr["producer_sha256"] != batch["producer_sha256"]
+    if (ocr["producer_sha256"] != document.get("producer_sha256", batch["producer_sha256"])
             or ocr["source_sha256"] != document["sha256"]):
         raise ValueError("保存OCRの原本・作成条件が一致しません。")
     for key in ("number", "width_px", "height_px", "width_mm", "height_mm", "rotation"):

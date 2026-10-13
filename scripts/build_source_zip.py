@@ -16,8 +16,9 @@ ROOT_FILES = {
     "実行設定.json", "抽出設定.json",
     "初期設定.bat", "前処理.bat", "抽出.bat", "Excel再出力.bat", "モデル管理.bat",
     "追加資産取得.bat", "Saluki導入.bat", "Saluki追加設定.bat", "全文OCR画像出力.bat",
+    "黄色マーカー追加.bat", "黄色マーカー_使い方.txt", "docs/VERIFICATION_JA.md",
 }
-SOURCE_FILES = {"source/run.py", "source/pyproject.toml", "source/LICENSE"}
+SOURCE_FILES = {"source/run.py", "source/marker_run.py", "source/pyproject.toml", "source/LICENSE"}
 PUBLIC_SCRIPTS = {
     "bootstrap.py", "build_source_zip.py", "verify_setup.py",
     "fetch_optional_assets.py", "setup_saluki.py", "bundled_core.py",
@@ -27,6 +28,7 @@ PUBLIC_ASSETS = {
     "ollama-runtime.json", "ocr-models.json", "saluki-runtime.json", "saluki-models.json",
     "optional-assets.json", "saluki-assets.json",
     "bundled-core.json",
+    "huggingface-ollama.json",
 }
 BUNDLED_CORE_PATH = "bundled/core/docuworks_ctypes-1.0.1-py3-none-any.whl"
 EXCLUDED_PARTS = {"__pycache__", ".git", ".ssh", ".venv", "node_modules"}
@@ -121,10 +123,15 @@ def source_files(root: Path) -> dict[str, bytes]:
         "licenses/core/LICENSE.txt", "licenses/core/NOTICE.md",
         "全文OCR画像出力.bat", "source/simple_drawing/ocr_image.py",
         "source/simple_drawing/ocr_image_export.py",
+        "source/simple_drawing/model_download.py", "assets/huggingface-ollama.json",
+        "黄色マーカー追加.bat", "黄色マーカー_使い方.txt", "source/marker_run.py",
+        "source/tests/test_marker_excel.py", "source/tests/test_marker_writer.py",
+        "licenses/黄色マーカー-MIT-LICENSE.txt", "docs/VERIFICATION_JA.md",
     }
     required.update("source/simple_drawing/" + name + ".py" for name in (
         "excel", "llm", "model_gui", "model_manager", "model_probe", "model_terms",
-        "pdf_ocr", "profiles", "saluki", "settings", "storage", "workflow",
+        "pdf_ocr", "profiles", "saluki", "settings", "storage", "workflow", "xdw_input",
+        "marker_excel", "xdw_marker",
     ))
     missing = sorted(required - selected.keys())
     if missing:

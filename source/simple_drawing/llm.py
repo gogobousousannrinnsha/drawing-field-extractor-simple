@@ -136,6 +136,8 @@ def model_contract(root: Path, profile: str | OllamaProfile | None = None) -> di
     # Preserve the existing test/package pin for the frozen Gemma4 model. New
     # models obtain their exact identity from the successful installation record.
     expected = EXPECTED_MANIFEST if selected.id == DEFAULT_PROFILE_ID else selected.expected_digest
+    if selected.fallback_digest and manifest_hash == selected.fallback_digest:
+        expected = selected.fallback_digest
     if expected is None:
         try:
             entry = read_json(root / "data/model-registry.json")["models"][selected.id]

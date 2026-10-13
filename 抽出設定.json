@@ -1,1 +1,5 @@
-{"item":"部品番号","region_hint_mm":null,"take":"one","instruction":""}
+{
+  "item": "図面番号",
+  "take": "one",
+  "instruction": "図面番号のラベルに対応する値だけを原文のまま抽出する。"
+}

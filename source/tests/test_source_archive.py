@@ -11,6 +11,13 @@ spec = importlib.util.spec_from_file_location("source_archive_builder", ROOT/"sc
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
 
+MARKER_PUBLIC_INPUTS = {
+    "黄色マーカー追加.bat", "黄色マーカー_使い方.txt", "source/marker_run.py",
+    "source/simple_drawing/marker_excel.py", "source/simple_drawing/xdw_marker.py",
+    "source/tests/test_marker_excel.py", "source/tests/test_marker_writer.py",
+    "licenses/黄色マーカー-MIT-LICENSE.txt", "docs/VERIFICATION_JA.md",
+}
+
 
 class SourceArchiveTests(unittest.TestCase):
     def copy_public_inputs(self, root):
@@ -35,6 +42,16 @@ class SourceArchiveTests(unittest.TestCase):
                 self.assertEqual(archive.read(builder.BUNDLED_CORE_PATH),
                                  (ROOT/builder.BUNDLED_CORE_PATH).read_bytes())
                 self.assertIn("licenses/core/LICENSE.txt", archive.namelist())
+                self.assertTrue(MARKER_PUBLIC_INPUTS.issubset(set(archive.namelist())))
+
+    def test_missing_marker_public_inputs_cannot_be_published(self):
+        for name in sorted(MARKER_PUBLIC_INPUTS):
+            with self.subTest(missing=name), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                self.copy_public_inputs(root)
+                (root/name).unlink()
+                with self.assertRaisesRegex(ValueError, "Required public inputs are missing"):
+                    builder.build(root, check_only=True)
 
     def test_missing_core_license_cannot_be_published(self):
         with tempfile.TemporaryDirectory() as folder:

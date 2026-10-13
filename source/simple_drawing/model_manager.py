@@ -13,7 +13,7 @@ import threading
 from filelock import FileLock, Timeout as LockTimeout
 import httpx
 
-from . import llm
+from . import llm, model_download
 from .model_probe import PROBE_VERSION, create_probe
 from .model_terms import ModelTerms, ModelTermsError, require_model_terms
 from .profiles import DEFAULT_PROFILE_ID, list_profiles as catalog, resolve_profile
@@ -34,7 +34,7 @@ class ModelOperationCancelled(ModelManagerError):
 def _code_fingerprints() -> dict[str, str]:
     source = Path(__file__).resolve().parent
     return {name: sha(source / name) for name in
-            ("llm.py", "model_manager.py", "model_probe.py", "profiles.py", "model_terms.py")}
+            ("llm.py", "model_manager.py", "model_download.py", "model_probe.py", "profiles.py", "model_terms.py")}
 
 
 def check_fingerprint(profile, model_digest: str) -> str:
@@ -95,6 +95,33 @@ def _watch_cancel(server, cancel, client=None):
         finished.set()
         if watcher is not None:
             watcher.join()
+
+
+def _pull_model(server, profile, cancel=None, progress=None):
+    with httpx.Client(trust_env=False, timeout=httpx.Timeout(120, connect=10)) as client, _watch_cancel(server, cancel, client):
+        with client.stream("POST", f"http://127.0.0.1:{server.port}/api/pull",
+                           json={"model": profile.model, "stream": True}) as response:
+            if response.status_code != 200:
+                raise ModelManagerError("DOWNLOAD_FAILED", f"モデル導入に失敗しました: HTTP {response.status_code}")
+            success = False
+            for line in response.iter_lines():
+                _cancelled(cancel)
+                if not line:
+                    continue
+                try:
+                    item = json.loads(line)
+                except ValueError as exc:
+                    raise ModelManagerError("DOWNLOAD_FAILED", "導入の進捗を読み取れません。") from exc
+                if not isinstance(item, dict):
+                    raise ModelManagerError("DOWNLOAD_FAILED", "進捗が不正です。")
+                if item.get("error"):
+                    raise ModelManagerError("DOWNLOAD_FAILED", str(item["error"]))
+                _emit(progress, "download", item.get("status", "導入中"),
+                      **{key: item[key] for key in ("digest", "completed", "total") if key in item})
+                success = item.get("status") == "success"
+            if not success:
+                raise ModelManagerError("DOWNLOAD_INCOMPLETE", "導入の正常完了を確認できません。")
+    _cancelled(cancel)
 
 
 class ModelManager:
@@ -171,7 +198,7 @@ class ModelManager:
             data = read_json(path)
             refs = [data["config"], *data["layers"]]
             model_digest = sha(path)
-            if profile.expected_digest is not None and model_digest != profile.expected_digest:
+            if profile.expected_digest is not None and model_digest not in (profile.expected_digest, profile.fallback_digest):
                 raise ModelManagerError("MODEL_CHANGED", "既存の検証済みモデル定義と一致しません。")
             blobs = []
             for ref in refs:
@@ -194,6 +221,7 @@ class ModelManager:
                         raise ModelManagerError("CORRUPT_MODEL", "モデルファイルのSHA-256が一致しません。")
                 blobs.append({"digest": blob_digest, "bytes": size})
             return {"profile_id": profile.id, "model_tag": profile.model, "digest": model_digest,
+                    "asset_variant": "huggingface" if model_digest == profile.fallback_digest else "ollama",
                     "manifest_sha256": model_digest, "manifest_path": relative(self.root, path),
                     "blobs": blobs, "size_bytes": sum(b["bytes"] for b in blobs)}
         except ModelManagerError:
@@ -224,7 +252,9 @@ class ModelManager:
         fingerprint = check_fingerprint(identity["profile_id"], identity["digest"])
         if not isinstance(check, dict) or check.get("fingerprint") != fingerprint:
             check = None
-        return {**identity, "installed_at": previous.get("installed_at", now()),
+        acquisition = previous.get("acquisition")
+        return {**identity, **({"acquisition": deepcopy(acquisition)} if isinstance(acquisition, dict) else {}),
+                "installed_at": previous.get("installed_at", now()),
                 "full_hash_verified": True, "hash_verified_at": now(), "check": check, **extra}
 
     def list_profiles(self):
@@ -245,6 +275,9 @@ class ModelManager:
                         card["size_bytes"] = entries[profile.model].get("size", 0)
                         try:
                             identity = self._asset_identity(profile)
+                            card["asset_variant"] = identity["asset_variant"]
+                            if identity["asset_variant"] == "huggingface":
+                                card["label"] += "（Hugging Face版）"
                             if entries[profile.model].get("digest") != identity["digest"]:
                                 raise ModelManagerError("MODEL_CHANGED", "APIとモデル定義が一致しません。")
                             self._capabilities(server, profile)
@@ -275,35 +308,34 @@ class ModelManager:
             with llm.OllamaServer(self.root, management=True) as server:
                 tags = server.api("/api/tags", timeout=30).get("models", [])
                 existing = any(item.get("name", item.get("model")) == profile.model for item in tags)
+                acquisition = {"source": "existing" if existing else "ollama"}
                 if existing:
                     _emit(progress, "verify", "導入済みです。再ダウンロードせず検査します。")
                 else:
                     estimate = profile.download_size_bytes
                     if shutil.disk_usage(self.root).free < estimate + 1024**3:
                         raise ModelManagerError("DISK_FULL", "モデル導入先の空き容量が不足しています。")
-                    with httpx.Client(trust_env=False, timeout=httpx.Timeout(120, connect=10)) as client, _watch_cancel(server, cancel, client):
-                        with client.stream("POST", f"http://127.0.0.1:{server.port}/api/pull",
-                                           json={"model": profile.model, "stream": True}) as response:
-                            if response.status_code != 200:
-                                raise ModelManagerError("DOWNLOAD_FAILED", f"モデル導入に失敗しました: HTTP {response.status_code}")
-                            success = False
-                            for line in response.iter_lines():
-                                _cancelled(cancel)
-                                if not line:
-                                    continue
-                                try:
-                                    item = json.loads(line)
-                                except ValueError as exc:
-                                    raise ModelManagerError("DOWNLOAD_FAILED", "導入の進捗を読み取れません。") from exc
-                                if not isinstance(item, dict):
-                                    raise ModelManagerError("DOWNLOAD_FAILED", "進捗が不正です。")
-                                if item.get("error"):
-                                    raise ModelManagerError("DOWNLOAD_FAILED", str(item["error"]))
-                                _emit(progress, "download", item.get("status", "導入中"),
-                                      **{key: item[key] for key in ("digest", "completed", "total") if key in item})
-                                success = item.get("status") == "success"
-                            if not success:
-                                raise ModelManagerError("DOWNLOAD_INCOMPLETE", "導入の正常完了を確認できません。")
+                    try:
+                        _pull_model(server, profile, cancel, progress)
+                    except ModelOperationCancelled:
+                        raise
+                    except (httpx.HTTPError, ModelManagerError) as primary_error:
+                        _cancelled(cancel)
+                        if isinstance(primary_error, ModelManagerError) and primary_error.code not in (
+                                "DOWNLOAD_FAILED", "DOWNLOAD_INCOMPLETE"):
+                            raise
+                        _emit(progress, "fallback", "Ollamaから取得できませんでした。Hugging Face直接取得を試します。")
+                        try:
+                            acquisition = model_download.install_from_huggingface(
+                                self.root, profile, cancel=cancel, progress=progress)
+                        except ModelOperationCancelled:
+                            raise
+                        except (model_download.HuggingFaceDownloadError, OSError) as fallback_error:
+                            _cancelled(cancel)
+                            raise ModelManagerError("MODEL_DOWNLOAD_FAILED",
+                                f"Ollamaから取得できませんでした: {primary_error}\n"
+                                f"Hugging Faceからも取得できませんでした: {fallback_error}\n"
+                                "モデル導入を停止します。ネット接続・プロキシ・保存先を確認してください。") from fallback_error
                     _cancelled(cancel)
                 identity = self._asset_identity(profile, full_hash=True, cancel=cancel, progress=progress)
                 tag = next((item for item in server.api("/api/tags").get("models", [])
@@ -312,7 +344,8 @@ class ModelManager:
                     raise ModelManagerError("MODEL_CHANGED", "導入後のAPIとモデル定義が一致しません。")
                 shown = self._capabilities(server, profile)
                 _cancelled(cancel)
-                record = self._record_identity(identity, registry, capabilities=shown["capabilities"])
+                record = self._record_identity(identity, registry, capabilities=shown["capabilities"],
+                                               acquisition=acquisition)
             if not server.shutdown_report.get("process_stopped") or server.shutdown_report.get("errors"):
                 raise ModelManagerError("CLEANUP_FAILED", "専用サーバーの終了確認に失敗しました。導入記録を確定していません。")
             registry["models"][profile.id] = record
@@ -460,6 +493,8 @@ class ModelManager:
                 raise ModelManagerError("MISSING_CHECK_REPORT", "検証記録がありません。")
             registry = self._registry()
             identity = self._asset_identity(profile, full_hash=True)
+            if identity["digest"] != profile.expected_digest:
+                raise ModelManagerError("INVALID_HISTORICAL_CHECK", "Hugging Face版は新しい動作確認が必要です。")
             record = self._record_identity(identity, registry, check={"status": "passed",
                 "fingerprint": check_fingerprint(profile, identity["digest"]), "checked_at": now(),
                 "report_path": relative(self.root, report), "report_sha256": sha(report),

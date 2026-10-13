@@ -121,7 +121,7 @@ class ManagerTests(unittest.TestCase):
         with self.good_check():
             checked = self.service.check("gemma3-4b")
         sources = manager._code_fingerprints()
-        self.assertEqual(set(sources), {"llm.py", "model_manager.py", "model_probe.py", "profiles.py", "model_terms.py"})
+        self.assertEqual(set(sources), {"llm.py", "model_manager.py", "model_download.py", "model_probe.py", "profiles.py", "model_terms.py"})
         with patch.object(manager, "_code_fingerprints", return_value={**sources, "llm.py": "0"*64}):
             with self.assertRaises(ModelManagerError) as caught:
                 self.service.ensure_usable("gemma3-4b")
@@ -372,8 +372,8 @@ class ManagerTests(unittest.TestCase):
 
     def test_stream_error_or_no_success_keeps_selection(self):
         before = (self.root / "実行設定.json").read_bytes()
-        for text, code in [('{"status":"pulling"}\n{"error":"network failed"}\n', "DOWNLOAD_FAILED"),
-                           ('{"status":"pulling","completed":10,"total":10}\n', "DOWNLOAD_INCOMPLETE")]:
+        for text, code in [('{"status":"pulling"}\n{"error":"network failed"}\n', "MODEL_DOWNLOAD_FAILED"),
+                           ('{"status":"pulling","completed":10,"total":10}\n', "MODEL_DOWNLOAD_FAILED")]:
             client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, text=text)))
             with patch.object(manager.httpx, "Client", return_value=client):
                 with self.assertRaises(ModelManagerError) as caught:

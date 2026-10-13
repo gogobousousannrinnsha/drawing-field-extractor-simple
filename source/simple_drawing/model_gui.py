@@ -249,7 +249,7 @@ class ModelManagerWindow:
         history_scroll = ttk.Scrollbar(details, orient="vertical", command=self.history.yview)
         history_scroll.grid(row=0, column=1, sticky="ns")
         self.history.configure(yscrollcommand=history_scroll.set)
-        ttk.Label(frame, text="保存先はこの候補フォルダー内です。PDF処理は既存の前処理・抽出BATから実行できます。",
+        ttk.Label(frame, text="保存先はこの候補フォルダー内です。PDF・XDW処理は前処理・抽出BATから実行できます。",
                   wraplength=920).grid(row=8, column=0, sticky="w", pady=(10, 0))
         self.start("refresh")
         window.after(80, self.poll)

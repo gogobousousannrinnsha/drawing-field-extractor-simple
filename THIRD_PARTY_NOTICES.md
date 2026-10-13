@@ -12,13 +12,15 @@ Python、外部の依存パッケージ、第三者DLL、Ollama、モデル、�
 
 固定する配布物は48,173 bytes、SHA-256は`7ea3a6d1623238180ccb400237a753b616dccf72761ba83d97fee1b55f7f5f58`です。取得元と検査情報は`assets/bundled-core.json`に記録し、初期設定ではネット取得せず、同封wheelを検査してフォルダー内runtimeへ導入します。
 
-これはPythonで記述した自作APIラッパーの配布です。DocuWorks本体、富士フイルムのSDK・ヘッダー・DLL、Integrationsは同封しません。DocuWorks製品の使用・SDKの利用には、各製品の条件が別途適用されます。現在のアプリはPDF入力のみで、Coreの同封はXDW入力処理の実装・動作確認を意味しません。
+これはPythonで記述した自作APIラッパーの配布です。DocuWorks本体、富士フイルムのSDK・ヘッダー・DLL、Integrationsは同封しません。DocuWorks製品の使用・SDKの利用には、各製品の条件が別途適用されます。本アプリは、同封Coreを通してXDWを読み取り専用で画像化し、抽出Excelの座標に基づく黄色マーカーを指定XDWのコピーへ配置します。これらには、利用者側で正規に導入した対応DocuWorks実行環境が必要です。検証範囲は`docs/VERIFICATION_JA.md`を参照してください。
 
 ## 初期設定で取得する資産
 
 取得先、固定版、SHA-256は`assets/`のロック情報を参照してください。初期設定は利用者のPCで各配布元から取得し、このアプリのフォルダー内に配置します。取得物のLICENSE・NOTICE・`*.dist-info`等の権利情報を削除せず保持します。
 
 PythonとTcl/Tkは公式の固定版MSI、91のPythonパッケージは固定wheel、OCRの検出・認識モデルはPaddleの公式アーカイブ、Ollamaは公式の固定版ZIPから取得します。Gemma4も専用Ollamaで取得し、固定digestを検査します。公開ZIPには、PP-OCRモデルのApache 2.0参照本文と帰属通知を`licenses/ocr/`へ収録し、初期設定でモデル保存先にも配置します。
+
+モデル取得に失敗した場合は、固定したHugging Face版を別のモデル資産として取得・検査し、動作確認後に採用します。Hugging Face版のmanifest、取得元revisionとSHA、設定、テンプレート、ライセンスの小さなテキスト部品は`assets/huggingface-ollama.json`に保持しています。モデル本体や画像用部品は同封しません。Gemma4のApache 2.0本文、Gemma3の利用条件・帰属文書を削除せず、モデル取得元が変わっても元の条件を保持します。モデルの取得元はggml-orgの固定revisionへ限定しています。
 
 | 資産 | 主な条件と確認先 |
 |---|---|

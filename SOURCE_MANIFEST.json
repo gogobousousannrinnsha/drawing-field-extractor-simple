@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "package": "drawing-field-extractor-simple",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "distribution_kind": "source-with-bundled-core-online-setup",
   "bundled_core": {
     "name": "docuworks-ctypes",
@@ -12,8 +12,8 @@
   "files": [
     {
       "path": "Excel再出力.bat",
-      "bytes": 687,
-      "sha256": "6b5b4d666084c6ee3e633aec8fede2740e4de77f2671764ac01c370be4619350"
+      "bytes": 696,
+      "sha256": "9cc2b04fec6c5fbedeeab6ee85804455dda7f6435f7bde094237a9d4caf3a711"
     },
     {
       "path": "LICENSE",
@@ -22,8 +22,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 18768,
-      "sha256": "11abff500639d3ecde1227b89059f103aa8fa9b4043cf9b35a7d979f7385df2a"
+      "bytes": 28950,
+      "sha256": "db298b3cf32feaeec001664401e7cc5b0f7c0e8da22be7a83b1a288832d520a5"
     },
     {
       "path": "Saluki追加設定.bat",
@@ -32,13 +32,18 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 6168,
-      "sha256": "64eca65abf8e4b5d2e439857949c3657e0690750b257413fb0905119a959a302"
+      "bytes": 7030,
+      "sha256": "c3135de27f92afae925d563735b443bde40edb0b70f18b047068d1c2f7f7bc26"
     },
     {
       "path": "assets/bundled-core.json",
       "bytes": 452,
       "sha256": "34760ac55300ec24733d245cf8602ce91090de5ac7a673452b52331fd8529d86"
+    },
+    {
+      "path": "assets/huggingface-ollama.json",
+      "bytes": 28663,
+      "sha256": "31395f7d79511619a1dd76065876a142fb0448972a3761f57e82412203124958"
     },
     {
       "path": "assets/ocr-models.json",
@@ -76,6 +81,11 @@
       "sha256": "7ea3a6d1623238180ccb400237a753b616dccf72761ba83d97fee1b55f7f5f58"
     },
     {
+      "path": "docs/VERIFICATION_JA.md",
+      "bytes": 4102,
+      "sha256": "1eeb6039206fff77540719d628682f5e2bc804d196924723e354e78fbd03e651"
+    },
+    {
       "path": "licenses/README.md",
       "bytes": 2199,
       "sha256": "41f36594f0e5e52ecb19d0656cbf490352d3ac5b5c47edcbc400d34fd4cb2fd5"
@@ -87,8 +97,8 @@
     },
     {
       "path": "licenses/core/NOTICE.md",
-      "bytes": 1570,
-      "sha256": "e74cbcff7a3a853c1aad283799cfed5d455ff9602c10e245fd732fe758f42c7c"
+      "bytes": 1589,
+      "sha256": "2f380247551bc0b77f30e480467e6dace86f8b54c28dc9d422614d635e0cff96"
     },
     {
       "path": "licenses/models/gemma3-NOTICE.txt",
@@ -131,14 +141,19 @@
       "sha256": "c1a0801d1445be1ebc9092c3f47cf8551577aec0bf62fff45c9ea092732052dd"
     },
     {
+      "path": "licenses/黄色マーカー-MIT-LICENSE.txt",
+      "bytes": 1078,
+      "sha256": "3883fc25fe83af3f0fea9c55321845c5c7865b2ebce54657463f7136790e214d"
+    },
+    {
       "path": "scripts/bootstrap.py",
-      "bytes": 22606,
-      "sha256": "669098c8613d633f7080d164fb72ba0b119aa9ac84dad2eaa74398c4fbc1280f"
+      "bytes": 23815,
+      "sha256": "f6eee79c80dc00078d1ff2a4a3da04f81e58590d81b2fc12c66725588efd8c7e"
     },
     {
       "path": "scripts/build_source_zip.py",
-      "bytes": 10594,
-      "sha256": "265fa2659dad726bcdca451fda1cf72607396c4da16e76850e4d23f8a88147c6"
+      "bytes": 11149,
+      "sha256": "4aa75c4ac7e684b1dc08f74dbb562f4b821e194dd8105c9f8c0ac3bf4328ad37"
     },
     {
       "path": "scripts/bundled_core.py",
@@ -171,9 +186,14 @@
       "sha256": "3883fc25fe83af3f0fea9c55321845c5c7865b2ebce54657463f7136790e214d"
     },
     {
+      "path": "source/marker_run.py",
+      "bytes": 5510,
+      "sha256": "b8ecb8729159e674d568bfac7b4269ed90f2fd9ec740c9614b1952f74e4d1f6f"
+    },
+    {
       "path": "source/pyproject.toml",
-      "bytes": 708,
-      "sha256": "612adde283bd84d39084b636ac42bfd9e73b76aadc14a907a06bd894cbdaf3de"
+      "bytes": 712,
+      "sha256": "6c03c319c327a18c2a0ffc929b65539e326de051de404d0861386ba930487a5f"
     },
     {
       "path": "source/run.py",
@@ -183,7 +203,7 @@
     {
       "path": "source/simple_drawing/__init__.py",
       "bytes": 85,
-      "sha256": "f5d950050b0c709a938ab7b59e3a58ac649cc9a6cfc96b479651f2b6144a5aa2"
+      "sha256": "0d8cad349455208fbbb22d65ae013b15860f9ccaaaacf7c5a2a8115dac0e9cf8"
     },
     {
       "path": "source/simple_drawing/excel.py",
@@ -192,18 +212,28 @@
     },
     {
       "path": "source/simple_drawing/llm.py",
-      "bytes": 26660,
-      "sha256": "11a927dd86d75c5e9fac2dddaa089976c95ac7bcbadb929a300a3240f829897f"
+      "bytes": 26783,
+      "sha256": "fef66d7b806153ea379d78c4eb6bc0f953e1da945896a046026ca4733558629c"
+    },
+    {
+      "path": "source/simple_drawing/marker_excel.py",
+      "bytes": 21691,
+      "sha256": "7fbe9c1098651002440c13061b63ddec56b7baaae246a1fd573c6121f2042870"
+    },
+    {
+      "path": "source/simple_drawing/model_download.py",
+      "bytes": 11425,
+      "sha256": "f4651d03f1979444fe3bb8a1c106651db4d77099d4a98cfde0537f955c39bb9b"
     },
     {
       "path": "source/simple_drawing/model_gui.py",
-      "bytes": 21075,
-      "sha256": "6061e1f8eb6191bd22b9dad5c924bded60a659c9534981baa22fc96bd5fce29c"
+      "bytes": 21072,
+      "sha256": "8c8b61fed9524918208b3438c70840c91b46b11319a25ecf9b09d5d839e2057d"
     },
     {
       "path": "source/simple_drawing/model_manager.py",
-      "bytes": 28740,
-      "sha256": "d74c35abb13ff8d6bd702b84329a0b3be07aa9ffd42993646c09a8a12ae53201"
+      "bytes": 30895,
+      "sha256": "fb9f5fafb0102f729b696b946d3e45a59bad170d31e5a35c23b04901f5f9873b"
     },
     {
       "path": "source/simple_drawing/model_probe.py",
@@ -222,8 +252,8 @@
     },
     {
       "path": "source/simple_drawing/ocr_image_export.py",
-      "bytes": 6862,
-      "sha256": "4b69510453b5e420da5755d04f35d7c17a80cd79ef63f4c68617b54fc1e7583e"
+      "bytes": 6895,
+      "sha256": "2c2d63f1d403eb59fc0d3e441733bcdfa3adc267f1ec42d6369dd9dcf3119dec"
     },
     {
       "path": "source/simple_drawing/pdf_ocr.py",
@@ -232,8 +262,8 @@
     },
     {
       "path": "source/simple_drawing/profiles.py",
-      "bytes": 2431,
-      "sha256": "5e64313b497d1b11b2ef8869e40c28cda6b166750a6311ffec242538774abbe0"
+      "bytes": 2916,
+      "sha256": "238d5008ce87287a1efd72605156aaf7b20c97c1a65ae2a1cb43d9c42013a774"
     },
     {
       "path": "source/simple_drawing/saluki.py",
@@ -252,8 +282,18 @@
     },
     {
       "path": "source/simple_drawing/workflow.py",
-      "bytes": 23454,
-      "sha256": "cd69d75bc2cd10fb643234139b8db0fe3814c95c03079c140f6bb5eb475310d7"
+      "bytes": 27431,
+      "sha256": "5a907d6ac5a0fd64e1c0e5c6fa1049107380182788b31bacd670ec8718642881"
+    },
+    {
+      "path": "source/simple_drawing/xdw_input.py",
+      "bytes": 9788,
+      "sha256": "dd5a15c67c571072c3c1256549fa32b7eafb88a906a42e937db1e36cf3e8306b"
+    },
+    {
+      "path": "source/simple_drawing/xdw_marker.py",
+      "bytes": 15467,
+      "sha256": "c4fbb46964a6ca8bc1e36fcffba11bb268dfbe5401dbac1f31e2b6c876ed53e7"
     },
     {
       "path": "source/tests/test_bootstrap.py",
@@ -281,19 +321,39 @@
       "sha256": "d5b58e02eaef4446f83c18f240013d2aded4313aaa57b80a4ccf0fa3edfaaf4b"
     },
     {
+      "path": "source/tests/test_marker_excel.py",
+      "bytes": 19285,
+      "sha256": "f859233d059a19d55865c754e925383fda3ff23ba44eebd8332975940b3229df"
+    },
+    {
+      "path": "source/tests/test_marker_writer.py",
+      "bytes": 19386,
+      "sha256": "41c08c5d380dee809113a66a76718ea68e72fe98cc45dabecff294c52ec8d51a"
+    },
+    {
+      "path": "source/tests/test_model_download.py",
+      "bytes": 23106,
+      "sha256": "8f5072255de3e4bd8a2cf9b1824ba0bfd750a31b8a7d7d95bc906f97e980e164"
+    },
+    {
+      "path": "source/tests/test_model_download_fallback.py",
+      "bytes": 36101,
+      "sha256": "78f1777d3e960821896858cfb3e45f465df05fe28a0e0f298cd3999141b3f0e7"
+    },
+    {
       "path": "source/tests/test_model_gui.py",
       "bytes": 9013,
       "sha256": "45a437e59e4b5e835528281cf9868d5ebcfdb4ac0f6681d1fdd063f5e1efacc6"
     },
     {
       "path": "source/tests/test_model_manager.py",
-      "bytes": 21709,
-      "sha256": "779d4e352ea18cf27f77ee9b726936dd1d579f112e220e9c0f1d31ab605cc3fa"
+      "bytes": 21738,
+      "sha256": "68dfca0d767d37ec3c1380bde5a82df7da4a2fa31efb4bb0ee26628afc037106"
     },
     {
       "path": "source/tests/test_model_profiles.py",
-      "bytes": 16821,
-      "sha256": "ad56cca609085d2a9a4ccf54ee81e12b076b0390d2e9ccfe71b68d034f1c46db"
+      "bytes": 16840,
+      "sha256": "71f5076c1bca91211540435a21bbcb20e4b28211aae5d88fb187bde2a7380b7b"
     },
     {
       "path": "source/tests/test_models_setup.py",
@@ -332,8 +392,8 @@
     },
     {
       "path": "source/tests/test_source_archive.py",
-      "bytes": 2636,
-      "sha256": "4d03d83e9d0847260aafb83ed7a407ac5e03731bea05020b5d4b772ce8dfd9c1"
+      "bytes": 3566,
+      "sha256": "2e1ef15141269789bb85dba8e5a413293c1557b79f7dc42a61e26c62e26e8f36"
     },
     {
       "path": "source/tests/test_storage.py",
@@ -344,6 +404,16 @@
       "path": "source/tests/test_workflow.py",
       "bytes": 18942,
       "sha256": "3339599f36c3a02ce1b5e7cdf4e1ab27764a45dfc429617223ee881136e082cf"
+    },
+    {
+      "path": "source/tests/test_xdw_input.py",
+      "bytes": 13631,
+      "sha256": "17fde6bcbb1bccbff2b306cd2eb85fc85e0197e46e35d26c408c9d04ad6b7913"
+    },
+    {
+      "path": "source/tests/test_xdw_workflow.py",
+      "bytes": 15905,
+      "sha256": "6dbca5a7c4dfbd77c57e1ee9d255ea36896b7263a31d2f0d9b6917fd4a195aa8"
     },
     {
       "path": "モデル管理.bat",
@@ -362,23 +432,33 @@
     },
     {
       "path": "前処理.bat",
-      "bytes": 896,
-      "sha256": "2ffc3b7581c095be61c08ad409fe093cca6a29559f661e80ca7613688c645a8c"
+      "bytes": 905,
+      "sha256": "9b3bdf5f24599f9f1b9081cfac83b904e9f6ab97f53ad05f946abfeff9680ec7"
     },
     {
       "path": "実行設定.json",
-      "bytes": 77,
-      "sha256": "b3b8073a4c171668bcff58cb360603b59f502ede32303d87be5d1d4f676205a7"
+      "bytes": 94,
+      "sha256": "b2f06d3d4104bcd8b67de0258f5186414b98bf50b4d19a6b00ff07e0a42263f3"
     },
     {
       "path": "抽出.bat",
-      "bytes": 688,
-      "sha256": "6410b907cd3f057b4bad9278a9a80d8f8a6e4271e9763cdd9ef700a0eb4ef487"
+      "bytes": 697,
+      "sha256": "5e933384d4bae339ec16fa7a83dcc92746e983582527a9736ed481701692fd02"
     },
     {
       "path": "抽出設定.json",
-      "bytes": 77,
-      "sha256": "9d0b56ccadf3b2a8ac27d0375f7a89cf879a661954dc5109c605d408dfe51830"
+      "bytes": 153,
+      "sha256": "ad7ad1b7f32b54a366e939dc779a22a2fdbb4105f5580c04f80fcbecb453e3ca"
+    },
+    {
+      "path": "黄色マーカー_使い方.txt",
+      "bytes": 3897,
+      "sha256": "3c58c56d609a524a92672083de03cfd05493db6ea6df88f25faba01baceaf3bd"
+    },
+    {
+      "path": "黄色マーカー追加.bat",
+      "bytes": 1016,
+      "sha256": "f5d947b9602140a55ae4d9717567dc590211339c02ed81866fec40692e6dcef2"
     }
   ]
 }

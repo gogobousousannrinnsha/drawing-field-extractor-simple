@@ -112,7 +112,7 @@ class ModelProfileTests(unittest.TestCase):
                          "6b9b5a1c4a375c774212bf35ed936a1bb960b3817ee39d8f6a8f08c6bb942d6d")
         self.assertEqual(record["parsed"]["results"][0]["value"], " 0007 mm ")
         self.assertEqual(server.loaded_model, "gemma4:e4b-it-q8_0")
-        self.assertEqual(set(get_profile().snapshot()), {"id", "model", "options", "think", "expected_digest"})
+        self.assertEqual(set(get_profile().snapshot()), {"id", "model", "options", "think", "expected_digest", "fallback_digest"})
         self.assertEqual(llm.request_supplement(DEFAULT_PROFILE_ID, self.settings), "")
         for field in ("request_supplement", "request_supplement_sha256", "user_content_sha256"):
             self.assertNotIn(field, record["request_metadata"])

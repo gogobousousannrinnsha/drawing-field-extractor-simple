@@ -400,7 +400,9 @@ def main():
         (root/name).mkdir(exist_ok=True)
     sys.path.insert(0, str(root/"source"))
     with operation_lock(root):
-        write(root/"data/setup-complete.json", {"status": "in_progress", "app_version": "0.1.4"})
+        setup_id = str(time.time_ns())
+        write(root/"data/setup-complete.json", {"status": "in_progress", "app_version": "0.1.5",
+                                               "setup_id": setup_id})
         bundled_core_manifest(root)
         check_capacity(root)
         print("[1/6] Pythonライブラリ", flush=True)
@@ -418,14 +420,30 @@ def main():
         print("構成部品の準備が完了しました。Gemma4の導入・確認は未完了です。", flush=True)
         return 0
     print("[6/6] Gemma4の導入と動作確認", flush=True)
-    setup_model(root, args.offline)
+    try:
+        setup_model(root, args.offline)
+    except (Exception, KeyboardInterrupt) as error:
+        if getattr(error, "code", None) != "BUSY":
+            try:
+                with operation_lock(root):
+                    marker = root/"data/setup-complete.json"
+                    current = read(marker)
+                    if current.get("setup_id") == setup_id:
+                        write(marker, {**current, "status": "cancelled" if isinstance(error, KeyboardInterrupt) or
+                                       getattr(error, "code", None) == "CANCELLED" else "failed",
+                                       "failed_stage": "model", "error_code": getattr(error, "code", "MODEL_SETUP_FAILED"),
+                                       "reason": str(error) or type(error).__name__})
+            except (OSError, ValueError, RuntimeError) as marker_error:
+                print(f"初期設定の停止記録を更新できませんでした: {marker_error}", file=sys.stderr)
+        raise
     model_record = read(root/"data/model-registry.json")["models"]["gemma4-q8"]
-    write(root/"data/setup-complete.json", {"status": "complete", "app_version": "0.1.4",
+    write(root/"data/setup-complete.json", {"status": "complete", "app_version": "0.1.5", "setup_id": setup_id,
                                           "bundled_core": read(root/"data/setup-core.json"),
                                           "python_packages_sha256": sha(root/"assets/python-packages.json"),
                                           "ollama_archive_sha256": read(root/"assets/ollama-runtime.json")["sha256"],
                                           "model": "gemma4:e4b-it-q8_0",
                                           "model_digest": model_record["digest"],
+                                          "model_asset_variant": model_record.get("asset_variant", "ollama"),
                                           "model_check_sha256": model_record["check"]["report_sha256"],
                                           "real_ocr_check_sha256": sha(root/"data/setup-real-ocr.json"),
                                           "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})

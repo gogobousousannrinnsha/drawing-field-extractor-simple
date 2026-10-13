@@ -1,1 +1,5 @@
-{"input_folder":"input","llm_backend":"gemma","ollama_profile":"gemma4-q8"}
+{
+  "input_folder": "input",
+  "llm_backend": "gemma",
+  "ollama_profile": "gemma4-q8"
+}
